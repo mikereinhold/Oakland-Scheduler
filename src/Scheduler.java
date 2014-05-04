@@ -261,15 +261,14 @@ public class Scheduler implements Serializable {
 			// Reset exception
 			exception = false;
 			
-			// Initialize working set
+			// Initialize two sets
+			// One as a current iteration working area and another as iteration results
 			List<List<Course>> workingSet = new ArrayList<List<Course>>();
+			List<List<Course>> newSet = new ArrayList<List<Course>>();
 			
 			// For each course
 			for(String courseID : this.currentCourseList){
-				
-				// Create a new working set
-				List<List<Course>> newSet = new ArrayList<List<Course>>();
-				
+								
 				// For each section in the course
 				for(Course course : this.catalog.get(courseID)){
 					
@@ -296,7 +295,11 @@ public class Scheduler implements Serializable {
 				if(exception) break;
 			
 				// Update working set
+				List<List<Course>> tempSet = workingSet;
 				workingSet = newSet;
+				newSet = tempSet;
+				
+				newSet.clear();
 			}
 			
 			// Return working set
