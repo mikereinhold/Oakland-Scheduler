@@ -250,7 +250,7 @@ public class Scheduler implements Serializable {
 	 * Method: generatePermutations
 	 * Purpose: generates all working permutations for current list (3rd Implementation)
 	/*******************************************************************/
-	public List<List<Course>> generatePermutations(){
+	public List<List<Course>> generatePermutations(List<List<Course>> workingSet){
 		
 		// Try to persuade GC to run
 		System.gc();
@@ -261,32 +261,41 @@ public class Scheduler implements Serializable {
 			// Reset exception
 			exception = false;
 			
-			// Initialize working set
-			List<List<Course>> workingSet = new ArrayList<List<Course>>();
+			// Initialize three sets
+			// One as a current iteration working area and another as iteration results
+			// and last as memory for checking course sets
+			//List<List<Course>> workingSet = new ArrayList<List<Course>>();
+			workingSet.clear();
+			List<List<Course>> newSet = new ArrayList<List<Course>>();
+			List<Course> cloneSet = new ArrayList<Course>();
+			
+			// Memory for meeting lists
+			List<Meeting> courseSubs = new ArrayList<Meeting>();
 			
 			// For each course
 			for(String courseID : this.currentCourseList){
 				
-				// Create a new working set
-				List<List<Course>> newSet = new ArrayList<List<Course>>();
 				
 				// For each section in the course
 				for(Course course : this.catalog.get(courseID)){
 					
 					if(workingSet.size() == 0){
-						List<Course> cloneSet = new ArrayList<Course>();
-						testClasses(new ArrayList<Course>(),course,cloneSet);
+						
+						testClasses(new ArrayList<Course>(),course,cloneSet, courseSubs);
 						newSet.add(cloneSet);
+						cloneSet = new ArrayList<Course>();
 					}
 					else{
 						// Check all current workingSets
 						for(List<Course> courseSet : workingSet){
 							
-							List<Course> cloneSet = new ArrayList<Course>();
-							
 							// If fits into working set then add to newSet
-							if(testClasses(courseSet, course, cloneSet)){
+							if(testClasses(courseSet, course, cloneSet,courseSubs)){
 								newSet.add(cloneSet);
+								cloneSet = new ArrayList<Course>();
+							}
+							else{
+								cloneSet.clear();
 							}
 						}
 					}
@@ -296,7 +305,11 @@ public class Scheduler implements Serializable {
 				if(exception) break;
 			
 				// Update working set
+				List<List<Course>> tempSet = workingSet;
 				workingSet = newSet;
+				newSet = tempSet;
+
+				newSet.clear();
 			}
 			
 			// Return working set
@@ -305,6 +318,7 @@ public class Scheduler implements Serializable {
 		}
 		catch(java.lang.OutOfMemoryError e){
 			this.exception = true;
+			System.out.println("Out of memory.");
 		}
 
 		return null;
@@ -314,7 +328,7 @@ public class Scheduler implements Serializable {
 	 * Method: testClasses
 	 * Purpose: tests if classes work together
 	/*******************************************************************/
-	public boolean testClasses(List<Course> coursesOrig, Course courseCmpOrig, List<Course> clone){
+	public boolean testClasses(List<Course> coursesOrig, Course courseCmpOrig, List<Course> clone, List<Meeting> courseSubs){
 		
 		try{
 		
@@ -322,7 +336,8 @@ public class Scheduler implements Serializable {
 			clone.add(courseCmpOrig);
 			
 			// Generate a complete list of sub courses
-			List<Meeting> courseSubs = new ArrayList<Meeting>();
+			courseSubs.clear();
+			
 			for(Course courselist : coursesOrig){
 				
 				// Add course to cloned list
@@ -436,7 +451,7 @@ public class Scheduler implements Serializable {
 			HttpPost termPage = new HttpPost("https://sail.oakland.edu/PROD/bwckctlg.p_display_courses?term_in=" + termIn + "&one_subj=" + courseSubject + "&sel_crse_strt="+ courseNumber + "&sel_crse_end=" + courseNumber + "&sel_subj=&sel_levl=&sel_schd=&sel_coll=&sel_divs=&sel_dept=&sel_attr=");
 			termPage.setHeader("Referer", "https://sail.oakland.edu/PROD/twbkwbis.P_WWWLogin");
 			HttpResponse response = client.execute(termPage);
-
+			
 			Elements mainContainer = Jsoup.parse(response.getEntity().getContent(), "UTF-8", "https://sail.oakland.edu").getElementsByClass("datadisplaytable");
 			
 			if(mainContainer.size() > 0 && mainContainer.get(0).getElementsByClass("ntdefault").size() > 0
