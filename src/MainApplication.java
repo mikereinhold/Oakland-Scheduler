@@ -1181,14 +1181,14 @@ public class MainApplication extends JPanel implements ActionListener{
 	/*******************************************************************/
 	public void updatePermutations(){
 		
-		unfilteredSchedules = null;
-		filteredSchedules = null;
-		List<List<Course>> temp = scheduler.generatePermutations();
+		//unfilteredSchedules = null;
+		//filteredSchedules = null;
+		List<List<Course>> temp = scheduler.generatePermutations(unfilteredSchedules);
 		
 		if(temp != null){
 
 			// Generate working permutations without filtering
-			unfilteredSchedules = scheduler.generatePermutations();
+			unfilteredSchedules = temp;
 		}
 		else{
 			
@@ -1215,6 +1215,8 @@ public class MainApplication extends JPanel implements ActionListener{
 				scheduler.getCurrentCourseList().add(s);
 			}
 			
+			unfilteredSchedules = scheduler.generatePermutations(unfilteredSchedules);
+			
 		}
 	}
 	
@@ -1224,7 +1226,7 @@ public class MainApplication extends JPanel implements ActionListener{
 	/*******************************************************************/
 	public void updateSchedule() {
 		
-		filteredSchedules = new ArrayList<List<Course>>();
+		filteredSchedules.clear();
 		if(unfilteredSchedules == null) return;
 		
 		// Reused index or filtering
