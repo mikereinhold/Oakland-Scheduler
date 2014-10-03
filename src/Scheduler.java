@@ -131,7 +131,7 @@ public class Scheduler implements Serializable {
 						Elements e = coursesOffered.get(j).getElementsByTag("td");
 
 						// Correctly formatted line ?
-						if(e.size() == 20 
+						if(e.size() == 23
 							&& !e.get(1).text().replace("\u00a0","").equals("")
 							&& !e.get(2).text().replace("\u00a0","").equals("")
 							&& !e.get(3).text().replace("\u00a0","").equals("")
@@ -141,8 +141,8 @@ public class Scheduler implements Serializable {
 							&& !e.get(7).text().replace("\u00a0","").equals("")
 							&& !e.get(8).text().replace("\u00a0","").equals("")
 							&& !e.get(9).text().replace("\u00a0","").equals("")
-							&& !e.get(16).text().replace("\u00a0","").equals("")
-							&& !e.get(18).text().replace("\u00a0","").equals("")
+							&& !e.get(19).text().replace("\u00a0","").equals("")
+							&& !e.get(21).text().replace("\u00a0","").equals("")
 							&& (e.get(8).text().contains("M")
 							|| e.get(8).text().contains("T")
 							|| e.get(8).text().contains("W")
@@ -156,8 +156,8 @@ public class Scheduler implements Serializable {
 							courseName = e.get(7).text();
 							days = e.get(8).text();
 							time = e.get(9).text();
-							instructor = e.get(16).text();
-							room = e.get(18).text();
+							instructor = e.get(19).text();
+							room = e.get(21).text();
 							closed = e.get(0).text().contains("C");
 							nr =  e.get(0).text().contains("NR");
 							sr =  e.get(0).text().contains("SR");
@@ -209,7 +209,7 @@ public class Scheduler implements Serializable {
 						}
 						
 						// Only meeting information (missing column info)
-						else if(e.size() == 20
+						else if(e.size() == 23
 								&& (e.get(8).text().contains("M")
 								|| e.get(8).text().contains("T")
 								|| e.get(8).text().contains("W")
@@ -223,7 +223,7 @@ public class Scheduler implements Serializable {
 							days = e.get(8).text();
 							time = e.get(9).text();
 							instructor = e.get(16).text(); 
-							room = e.get(18).text();
+							room = e.get(21).text();
 							
 							Meeting currentSub = new Meeting(currentCourse, time,days,location,instructor, room, currentCourse.getMeetings().size());
 							currentCourse.getMeetings().add(currentSub);
