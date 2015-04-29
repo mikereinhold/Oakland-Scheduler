@@ -129,9 +129,9 @@ public class Scheduler implements Serializable {
 						
 						// Get all sections
 						Elements e = coursesOffered.get(j).getElementsByTag("td");
-
+						
 						// Correctly formatted line ?
-						if(e.size() == 20 
+						if(e.size() == 20
 							&& !e.get(1).text().replace("\u00a0","").equals("")
 							&& !e.get(2).text().replace("\u00a0","").equals("")
 							&& !e.get(3).text().replace("\u00a0","").equals("")
@@ -229,6 +229,8 @@ public class Scheduler implements Serializable {
 							currentCourse.getMeetings().add(currentSub);
 						}
 					}
+						
+						
 				}	
 			}
 			
